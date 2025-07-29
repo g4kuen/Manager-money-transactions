@@ -1,0 +1,48 @@
+{% extends "transactions/base.html" %}
+{% block title %}{{ model_verbose_name_plural|title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ model_verbose_name_plural|title }}</h2>
+
+    <a href="{% url 'dictionary_create' model=model_name %}" class="btn btn-primary mb-3">
+        + Добавить {{ model_verbose_name }}
+    </a>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Название</th>
+                {% if show_type_column %}
+                <th>Тип</th>
+                {% elif show_category_column %}
+                <th>Категория</th>
+                {% endif %}
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for object in object_list %}
+            <tr>
+                <td>{{ object.name }}</td>
+                {% if show_type_column %}
+                <td>{{ object.type.name }}</td>
+                {% elif show_category_column %}
+                <td>{{ object.category.name }}</td>
+                {% endif %}
+                <td>
+                    <a href="{% url 'dictionary_update' model=model_name pk=object.pk %}"
+                       class="btn btn-sm btn-outline-secondary">Изменить</a>
+                    <a href="{% url 'dictionary_delete' model=model_name pk=object.pk %}"
+                       class="btn btn-sm btn-outline-danger">Удалить</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">Нет данных</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,60 +1,141 @@
+{% extends "transactions/base.html" %}
+{% load static %}
 
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Учет ДДС</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+{% block title %}Учет ДДС{% endblock %}
 
-<form method="get" class="mb-4">
-    <div class="row g-3">
-        {% for field in filter.form %}
-        <div class="col-md-3">
-            <label class="form-label">{{ field.label }}</label>
-            {{ field }}
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">
+            <i class="fas fa-money-bill-wave me-2"></i>
+            Движение денежных средств
+        </h1>
+        <a href="{% url 'create_record' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Создать запись
+        </a>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Фильтры</h5>
         </div>
-        {% endfor %}
+        <div class="card-body">
+            <form method="get">
+                <div class="row align-items-end">
+                    {% for field in filter.form %}
+                    <div class="col-auto mb-3">
+                        <div class="d-flex align-items-center">
+                            <label class="me-2">{{ field.label }}:</label>
+                            {{ field }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="col-auto mb-3">
+                        <button type="submit" class="btn btn-primary me-2">
+                            Применить
+                        </button>
+                        <a href="." class="btn btn-secondary">
+                            Сбросить
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <button type="submit" class="btn btn-primary mt-3">Фильтровать</button>
-</form>
 
-
-    <div class="container mt-4">
-        <h1 class="mb-4">Движение денежных средств</h1>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Дата</th>
-                    <th>Статус</th>
-                    <th>Тип</th>
-                    <th>Категория</th>
-                    <th>Подкатегория</th>
-                    <th>Сумма (руб)</th>
-                    <th>Комментарий</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for record in records %}
-                <tr>
-                    <td>{{ record.date }}</td>
-                    <td>{{ record.status }}</td>
-                    <td>{{ record.type }}</td>
-                    <td>{{ record.category }}</td>
-                    <td>{{ record.subcategory }}</td>
-                    <td>{{ record.amount }}</td>
-                    <td>{{ record.comment|default:"—" }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="7" class="text-center">Нет записей</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <!-- Таблица записей -->
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Дата</th>
+                        <th>Статус</th>
+                        <th>Тип</th>
+                        <th>Категория</th>
+                        <th>Подкатегория</th>
+                        <th class="text-end">Сумма</th>
+                        <th>Комментарий</th>
+                        <th class="text-end">Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td>{{ record.date|date:"d.m.Y" }}</td>
+                        <td>
+                            {% if record.status %}
+                                {{ record.get_status_display|default:record.status }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.type %}
+                                {{ record.get_type_display|default:record.type }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>{{ record.category|default:"—" }}</td>
+                        <td>{{ record.subcategory|default:"—" }}</td>
+                        <td class="text-end">{{ record.amount }} ₽</td>
+                        <td>{{ record.comment|default:"—"|truncatechars:30 }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'edit_record' record.id %}" class="btn btn-sm btn-primary me-1">
+                                Редактировать
+                            </a>
+                            <a href="{% url 'delete_record' record.id %}" class="btn btn-sm btn-danger">
+                                Удалить
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="fas fa-inbox fa-2x mb-3"></i>
+                            <p class="mb-0">Нет записей для отображения</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-<a class="nav-link dropdown-toggle" href="{% url 'create_record' %}" role="button" data-bs-toggle="dropdown"> Создать запись</a>
-</body>
-</html>
+
+    {% if is_paginated %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    &laquo;
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+            {% else %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a></li>
+            {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+                    &raquo;
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}

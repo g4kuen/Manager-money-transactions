@@ -1,0 +1,12 @@
+{% extends "transactions/base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Редактировать{% else %}Создать{% endif %} запись</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <a href="{% url 'record_list' %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "transactions/base.html" %}
+{% block title %}
+    {% if object %}Редактирование {{ model_verbose_name }}
+    {% else %}Создание {{ model_verbose_name }}{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>
+        {% if object %}Редактирование {{ model_verbose_name }}
+        {% else %}Новый {{ model_verbose_name }}{% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+            {% if object %}Сохранить{% else %}Создать{% endif %}
+        </button>
+        <a href="{% url 'dictionary_list' model=model_name %}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

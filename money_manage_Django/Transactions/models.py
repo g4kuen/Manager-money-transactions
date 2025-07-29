@@ -1,6 +1,8 @@
 from django.db import models
 
 class Status(models.Model):
+    objects = models.Manager()
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
 
 
@@ -9,6 +11,7 @@ class Status(models.Model):
 
 class Type(models.Model):
     objects = models.Manager()
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -16,6 +19,7 @@ class Type(models.Model):
 
 class Category(models.Model):
     objects = models.Manager()
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50, unique=True)
     type = models.ForeignKey(Type, on_delete=models.CASCADE)
 
@@ -24,6 +28,7 @@ class Category(models.Model):
 
 class Subcategory(models.Model):
     objects = models.Manager()
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=50)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
@@ -31,6 +36,7 @@ class Subcategory(models.Model):
         return self.name
 
 class Record(models.Model):
+    id = models.AutoField(primary_key=True)
     date = models.DateField()
     status = models.ForeignKey(Status, on_delete=models.PROTECT)
     type = models.ForeignKey(Type, on_delete=models.PROTECT)

@@ -1,4 +1,7 @@
+from django.conf.urls.static import static
 from django.urls import path, re_path
+from django.conf import settings
+
 
 
 from .views import *
@@ -6,6 +9,7 @@ from .views import *
 
 
 urlpatterns= [
+    #records
     path('', record_list, name='record_list'),
     path('new/', create_record, name='create_record'),
     path('edit/<int:pk>/', edit_record, name='edit_record'),
@@ -18,8 +22,11 @@ urlpatterns= [
     path('dictionaries/<str:model>/new/', DictionaryCreateView.as_view(), name='dictionary_create'),
     path('dictionaries/<str:model>/<int:pk>/edit/', DictionaryUpdateView.as_view(), name='dictionary_update'),
     path('dictionaries/<str:model>/<int:pk>/delete/', DictionaryDeleteView.as_view(), name='dictionary_delete'),
-]
 
+]
+if settings.DEBUG:
+    print(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 #     path('  home/', index, name='home'), #http://127.0.0.1:8000/Armia
 #     path('cats/<int:catid>/', categories), #http://127.0.0.1:8000/categories
 #     #path('tables/', tables)

@@ -1,0 +1,94 @@
+{% extends "transactions/base.html" %}
+{% load static %}
+
+{% block title %}Удаление {{ object }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header {% if has_protected_objects %}bg-warning{% else %}bg-danger{% endif %} text-white">
+                    <h3 class="mb-0">
+                        <i class="fas {% if has_protected_objects %}fa-exclamation-circle{% else %}fa-trash-alt{% endif %} me-2"></i>
+                        {% if has_protected_objects %}Удаление невозможно{% else %}Подтверждение удаления{% endif %}
+                        <span class="badge bg-light text-dark ms-2">
+                            {{ model_verbose_name|title }}
+                        </span>
+                    </h3>
+                </div>
+
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="alert {% if has_protected_objects %}alert-warning{% else %}alert-danger{% endif %}">
+                        <h4 class="alert-heading">
+                            {% if has_protected_objects %}Обнаружены связанные записи{% else %}Вы уверены?{% endif %}
+                        </h4>
+
+                        <p class="mb-3">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Действие применяется к {{ model_verbose_name|lower }}:
+                        </p>
+
+                        <div class="my-3 p-3 bg-light rounded">
+                            <div class="d-flex align-items-center">
+                                <i class="fas {% if has_protected_objects %}fa-lock text-warning{% else %}fa-trash text-danger{% endif %} me-3 fs-4"></i>
+                                <div>
+                                    <h5 class="mb-1">{{ object }}</h5>
+                                    {% if object.description %}
+                                    <p class="small text-muted mb-0">{{ object.description|truncatechars:100 }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if has_protected_objects %}
+                        <hr>
+                        <h5><i class="fas fa-link me-1"></i> Связанные записи ({{ protected_objects|length }}):</h5>
+                        <ul class="list-group mb-3">
+                            {% for record in protected_objects|slice:":5" %}
+                            <li class="list-group-item">
+                                <i class="fas fa-file-invoice me-2 text-muted"></i>{{ record }}
+                            </li>
+                            {% endfor %}
+                            {% if protected_objects|length > 5 %}
+                            <li class="list-group-item text-muted">
+                                <i class="fas fa-ellipsis-h me-2"></i>... и ещё {{ protected_objects|length|add:"-5" }}
+                            </li>
+                            {% endif %}
+                        </ul>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'dictionary_list' model=model_name %}" class="btn btn-lg btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Отмена
+                        </a>
+
+                        {% if not has_protected_objects %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-lg btn-danger">
+                                <i class="fas fa-trash-alt me-2"></i>Удалить {{ model_verbose_name|lower }}
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/confirm_delete_dictionary.css' %}">
+{% endblock %}
