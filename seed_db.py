@@ -10,7 +10,7 @@ DB_CONFIG = {
 }
 
 def seed_data():
-    print("=== Начало заполнения базы данных ===")
+    print("Начало заполнения базы данных")
     
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -54,7 +54,7 @@ def seed_data():
                     """, (subcat, cat_id))
 
         conn.commit()
-        print("=== Данные успешно загружены ===")
+        print("Данные успешно загружены")
 
     except Exception as e:
         print(f"Ошибка: {e}")
