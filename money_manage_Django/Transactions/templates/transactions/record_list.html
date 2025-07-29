@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,20 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
+
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        {% for field in filter.form %}
+        <div class="col-md-3">
+            <label class="form-label">{{ field.label }}</label>
+            {{ field }}
+        </div>
+        {% endfor %}
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Фильтровать</button>
+</form>
+
+
     <div class="container mt-4">
         <h1 class="mb-4">Движение денежных средств</h1>
 
@@ -41,5 +55,6 @@
             </tbody>
         </table>
     </div>
+<a class="nav-link dropdown-toggle" href="{% url 'create_record' %}" role="button" data-bs-toggle="dropdown"> Создать запись</a>
 </body>
 </html>

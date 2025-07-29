@@ -4,8 +4,20 @@ from django.urls import path, re_path
 from .views import *
 
 
+
 urlpatterns= [
     path('', record_list, name='record_list'),
+    path('new/', create_record, name='create_record'),
+    path('edit/<int:pk>/', edit_record, name='edit_record'),
+    path('delete/<int:pk>/', delete_record, name='delete_record'),
+    path('api/get-subcategories/<int:category_id>/', get_subcategories, name='get_subcategories'),
+    path('api/get-categories/<int:type_id>/', get_categories, name='get_categories'),
+
+    #dictionaries
+    path('dictionaries/<str:model>/', DictionaryListView.as_view(), name='dictionary_list'),
+    path('dictionaries/<str:model>/new/', DictionaryCreateView.as_view(), name='dictionary_create'),
+    path('dictionaries/<str:model>/<int:pk>/edit/', DictionaryUpdateView.as_view(), name='dictionary_update'),
+    path('dictionaries/<str:model>/<int:pk>/delete/', DictionaryDeleteView.as_view(), name='dictionary_delete'),
 ]
 
 #     path('  home/', index, name='home'), #http://127.0.0.1:8000/Armia
