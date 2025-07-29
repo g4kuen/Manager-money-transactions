@@ -80,7 +80,7 @@ DATABASES = {
         'NAME': 'transactions',
         'USER': 'postgres',
         'PASSWORD': '1',
-        'HOST': 'localhost',
+        'HOST': 'db',
         'PORT': '5432',
     }
 }
@@ -131,3 +131,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'Transactions/static')
+
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'web', '0.0.0.0'] 
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8001', 'http://127.0.0.1:8001']
